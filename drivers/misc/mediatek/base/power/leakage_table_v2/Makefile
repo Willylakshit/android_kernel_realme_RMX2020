@@ -61,4 +61,36 @@ obj-$(CONFIG_MACH_MT6785) += mtk_static_power_mt6785.o
 
 # MT6885
 obj-$(CONFIG_MACH_MT6885) += mtk_static_power.o
-obj-$(CONFIG_MACH_MT6885) += mtk_static_power_mt6885.o
+ifeq ($(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES),"mediatek/mt6885")
+obj-y += mtk_static_power_mt6885.o
+else
+obj-y += mtk_static_power_mt6893.o
+endif
+endif
+
+# MT6893
+obj-$(CONFIG_MACH_MT6893) += mtk_static_power.o
+
+obj-$(CONFIG_MACH_MT6893) += mtk_static_power_mt6893.o
+
+# MT6873
+obj-$(CONFIG_MACH_MT6873) += mtk_static_power.o
+
+obj-$(CONFIG_MACH_MT6873) += mtk_static_power_mt6873.o
+
+# MT6853
+obj-$(CONFIG_MACH_MT6853) += mtk_static_power.o
+
+obj-$(CONFIG_MACH_MT6853) += mtk_static_power_mt6853.o
+
+# MT6833
+obj-$(CONFIG_MACH_MT6833) += mtk_static_power.o
+
+obj-$(CONFIG_MACH_MT6833) += mtk_static_power_mt6833.o
+
+# MT8168
+obj-$(CONFIG_MACH_MT8168) += mtk_static_power.o
+
+obj-$(CONFIG_MACH_MT8168) += mtk_static_power_mt8168.o
+
+ccflags-y += -Wno-maybe-uninitialized
