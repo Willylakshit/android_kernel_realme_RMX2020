@@ -61,8 +61,10 @@ EXPORT_SYMBOL(ged_kpi_PushAppSelfFcFp_fbt);
 
 #define GED_KPI_MSEC_DIVIDER 1000000
 #define GED_KPI_SEC_DIVIDER 1000000000
-#define GED_KPI_MAX_FPS 60
+#define GED_KPI_MAX_FPS 67
+/* set default margin to be distinct from FPSGO(0 or 3) */
 #define GED_KPI_DEFAULT_FPS_MARGIN 3
+#define GED_KPI_CPU_MAX_OPP 4
 
 typedef enum {
 	GED_TIMESTAMP_TYPE_D		= 0x1,
@@ -224,7 +226,7 @@ typedef struct GED_KPI_GPU_TS_TAG {
 
 /* static int display_fps = GED_KPI_MAX_FPS; */
 static int is_game_control_frame_rate;
-static int target_fps_4_main_head = 60;
+static int target_fps_4_main_head = 67;
 static long long vsync_period = GED_KPI_SEC_DIVIDER / GED_KPI_MAX_FPS;
 static GED_LOG_BUF_HANDLE ghLogBuf;
 static struct workqueue_struct *g_psWorkQueue;
@@ -235,11 +237,10 @@ static GED_THREAD_HANDLE ghThread;
 static unsigned int gx_dfps; /* variable to fix FPS*/
 static unsigned int gx_frc_mode; /* variable to fix FRC mode*/
 #ifdef GED_KPI_CPU_BOOST
-static unsigned int enable_cpu_boost = 1;
-#endif
-static unsigned int enable_gpu_boost = 1;
+static unsigned int enable_cpu_boost = 0;
+#endif /* GED_KPI_CPU_BOOST */
 static unsigned int is_GED_KPI_enabled = 1;
-static unsigned int ap_self_frc_detection_rate = 20;
+static unsigned int ap_self_frc_detection_rate = 30;
 #ifdef GED_ENABLE_FB_DVFS
 static unsigned int g_force_gpu_dvfs_fallback;
 #endif
@@ -288,15 +289,17 @@ static unsigned int gx_gpu_freq_avg;
 
 #ifdef GED_KPI_CPU_BOOST
 static int boost_accum_cpu;
-static long target_t_cpu_remained = 16000000; /* for non-GED_KPI_MAX_FPS-FPS cases */
-/* static long target_t_cpu_remained_min = 8300000; */ /* default 0.5 vsync period */
-static int cpu_boost_policy;
+/* for non-GED_KPI_MAX_FPS-FPS cases */
+static long target_t_cpu_remained = 14100000;
+/* static long target_t_cpu_remained_min = 8300000; */
+/* default 0.5 vsync period */
+static int cpu_boost_policy=-1;
 static int boost_extra;
-static int boost_amp;
+static int boost_amp=1;
 static int deboost_reduce;
-static int boost_upper_bound = 100;
-static void (*ged_kpi_cpu_boost_policy_fp)(GED_KPI_HEAD *psHead,
-	GED_KPI *psKPI);
+static int boost_upper_bound = 80;
+static void (*ged_kpi_cpu_boost_policy_fp)(struct GED_KPI_HEAD *psHead,
+	struct GED_KPI *psKPI);
 module_param(target_t_cpu_remained, long, 0644);
 module_param(gx_force_cpu_boost, int, 0644);
 module_param(gx_top_app_pid, int, 0644);
