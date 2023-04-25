@@ -916,8 +916,8 @@ static void __init acpi_cpufreq_boost_init(void)
 		return;
 	}
 
-		acpi_cpufreq_driver.boost_supported = true;
-		acpi_cpufreq_driver.boost_enabled = boost_state(0);
+	acpi_cpufreq_driver.set_boost = set_boost;
+	acpi_cpufreq_driver.boost_enabled = boost_state(0);
 
 	/*
 	 * This calls the online callback on all online cpu and forces all
